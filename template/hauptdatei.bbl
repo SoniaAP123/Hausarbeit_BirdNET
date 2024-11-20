@@ -1,0 +1,90 @@
+\begin{thebibliography}{14}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Clippy()]{clippy_microphone}
+Clippy.
+\newblock {EM272Z1 Mono Microphone}.
+\newblock Mono-Mikrofon.
+\newblock Händler: Veldshop.nl.
+
+\bibitem[DD4WH()]{amateurfunker}
+Frank DD4WH.
+\newblock Suggestions for usb microphone systems.
+\newblock \url{https://github.com/mcguirepr89/BirdNET-Pi/discussions/39}.
+
+\bibitem[Kahl()]{birdnetGit}
+Stefan Kahl.
+\newblock Birdnet-analyzer.
+\newblock \url{https://github.com/kahst/BirdNET-Analyzer}, letzter Zugriff am
+  22.03.24.
+
+\bibitem[Kahl et~al.(2021)Kahl, Wood, Eibl, and Klinck]{kahl2021birdnet}
+Stefan Kahl, Connor~M Wood, Maximilian Eibl, and Holger Klinck.
+\newblock Birdnet: A deep learning solution for avian diversity monitoring.
+\newblock \emph{Ecological Informatics}, 61:\penalty0 101236, 2021.
+
+\bibitem[Klein()]{pandas-kurs}
+Bernd Klein.
+\newblock Python-kurs - einführng in pandas.
+\newblock \url{https://www.python-kurs.eu/pandas.php}, letzter Zugriff am
+  22.03.24.
+
+\bibitem[nvidia({\natexlab{a}})]{jetson_datasheet}
+nvidia, {\natexlab{a}}.
+\newblock
+  \url{https://www.nvidia.com/de-de/autonomous-machines/embedded-systems/jetson-nano-developer-kit/},
+  letzter Zugriff am 16.03.24.
+
+\bibitem[nvidia({\natexlab{b}})]{jetson_web}
+nvidia, {\natexlab{b}}.
+\newblock
+  \url{https://files.seeedstudio.com/wiki/reComputer/reComputer-J1010-datasheet.pdf},
+  letzter Zugriff am 16.03.24.
+
+\bibitem[Q-engineering()]{qengineering}
+Q-engineering.
+\newblock Install tensorflow lite 2.4.0 on jetson nano.
+\newblock
+  \url{https://qengineering.eu/install-tensorflow-2-lite-on-jetson-nano.html},
+  letzter Zugriff am 22.03.24.
+
+\bibitem[Soundscapes()]{soundscapes_windshield}
+Immersive Soundscapes.
+\newblock Comica cvm-mf1 windshield.
+\newblock Händler: Veldshop.nl.
+
+\bibitem[Team({\natexlab{a}})]{alsa_doc}
+ALSA~Development Team.
+\newblock Alsa, {\natexlab{a}}.
+\newblock \url{https://wiki.ubuntuusers.de/ALSA/ } letzter Zugriff am 15. März
+  2024.
+
+\bibitem[Team({\natexlab{b}})]{pandas_doc}
+Pandas~Development Team.
+\newblock pandas documentation, {\natexlab{b}}.
+\newblock \url{http://pandas.pydata.org/docs/} Stand Feb 23, 2024 Version:
+  2.2.1.
+
+\bibitem[Team({\natexlab{c}})]{datetime_doc}
+Python~Development Team.
+\newblock datetime — basic date and time types, {\natexlab{c}}.
+\newblock \url{https://docs.python.org/3/library/datetime.html } letzter
+  Zugriff am 15. März 2024.
+
+\bibitem[Team({\natexlab{d}})]{glob_doc}
+Python~Development Team.
+\newblock glob — unix style pathname pattern expansion, {\natexlab{d}}.
+\newblock \url{https://docs.python.org/3/library/glob.html#module-glob} letzter
+  Zugriff am 20. März 2024.
+
+\bibitem[Team({\natexlab{e}})]{multiprocessing_doc}
+Python~Development Team.
+\newblock concurrent.futures — launching parallel tasks, {\natexlab{e}}.
+\newblock \url{https://docs.python.org/3/library/concurrent.futures.html }
+  letzter Zugriff am 19. März 2024.
+
+\end{thebibliography}

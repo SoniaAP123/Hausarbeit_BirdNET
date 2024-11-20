@@ -1,0 +1,13 @@
+\section{Konzept}
+\label{sec:Konzept}
+
+Wie in der Einleitung erwähnt soll ein mobiler Computer im Freien eine 24 stundenlange Audioaufnahme durchführen und parallel dazu die Aufnahmen mit einem KI-Netz analysieren. Möglichst zeitnah sind dann auch die Aufnahmen, in denen ein Vogel erkannt ist, herauszufiltern und die Nicht-Vogel-Audioabschnitte zu verwerfen. 
+
+Die Software läuft auf dem mobilen Computer, der durch eine Powerbank mit Strom versorgt ist. Beide Hardwarekomponenten sind in einer Box zum Schutz vor Umwelteinflüssen platziert. Die Box hat einen Kabelausgang der ein Mikrofonkabel vom Computer zum Mikrofon nach außen führt. Während die Box z.B. auf den Boden platziert ist, hängt das Mikrofon an einem Baum. 
+Den genaue Versuchsaufbau veranschaulicht Abschnitt \ref{sec:versuchsaufbau}
+
+
+Aufnahme, Analyse und Auswertung sollen möglichst parallel für Echtzeit ablaufen. Gleichzeitig ist aber durch geringe Rechenkosten der Stromverbauch und die Auslastung des Computers zu minimieren.
+
+
+Eine weitere Anforderung an das Projekt ist Datenschutz. Nach StGB \texttt{gem. 201 StGB (Verletzung der Vertraulichkeit des Wortes)}  ist das unerlaubte mitschneiden und speichern von Gesprächen dritter rechtswidrig. Da das Programm die Originalaudiodatein löscht und auch nur ausschnitte mit erkanntem Vogelgesang speichert, sind Menschen größtenteils bereits durch den Ansatz herausgefiltert. Audioabschnitte mit reinen Störgeräuschen wie z.B. Menschen sind somit ebenfalls herausgefiltert.

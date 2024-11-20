@@ -1,0 +1,671 @@
+\section{test}
+
+\lstinline{testtesttesttesttesttesttesttesttest}
+
+
+\section{Umsetzung}
+\label{sec:umsetzung}
+Dieser Abschnitt beschäftigt sich mit der softwarebasierten Umsetzung. Nach einer allgemeinen Übersicht über den Ablauf des Programms, gehen die Unterabschnitte auf die einzelnen Funktionen und die implementierten Bibliotheken ein.
+
+
+\subsection{Modell der Software}
+\label{subsec:softwaremodell}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{bilder/modell_app_2.png}
+ \caption{Modell der Applikation}
+    \label{fig:model_app}
+\end{figure}
+%noch so farblich markieren was Initialiserung, Analyse, Aufnahme und Weiterverarbeitung sind
+%nochmal alle Titel der Absätze auch im Modell erwähnen
+
+Der*Die Ornithologe*in ruft per Shell das Pythonskript \texttt{main.py} mit den optionalen Startargumenten (s. Abschnitt \ref{subsec:configs}) auf. Beim Aufruf von main.py konfiguriert die main-Funktion das Programm mit den übergebenen Startargumenten. Danach ruft die Funktion über die Methoden der Pythonbibliothek \textit{multiprocessing} (s. Abschnitt \ref{multiprocessing}) die Funktionen \texttt{rec()}, \texttt{analyze()} und \texttt{sort()} als parallel auszuführende Prozesse auf. Diese Funktionen bekommen die Parameter, die im Modell \ref{fig:model_app} in den jeweiligen Blöcken unter \texttt{param:} gelistet sind, übergeben. Die Ausführung der Funktionen ist zeitlich eingegrenzt. Diese wiederum rufen Unterprozesse auf. 
+
+
+% \begin{python}
+% class MyClass(Yourclass):
+%     def __init__(self, my, yours):
+%         bla = '5 1 2 3 4'
+%         print bla
+% \end{python}
+
+
+\texttt{rec()} ruft SOX (s. Abschnitt \ref{subsubsec:sox})  für die energiesparende kontinuierliche Audioaufzeichnung auf. \texttt{analyze()} stellt die Schnittstelle zum BirdNET-Analyzer her (s. Abschnitt\ref{subsec:änderungen}). 
+
+\texttt{sort()} nutzt zum Zuschneiden der Audiofiles die Bibliotheken Pandas (s. Abschnitt \ref{subsubsec:pandas}), Piso (s. Abschnitt \ref{subsubsec:piso}) und Soundfile (s. Abschnitt \ref{subsubsec:soundfile}).
+
+
+\subsection{Bibliotheken}
+\label{sec:bibliotheken}
+
+\subsubsection{Multiprocessing}
+\label{subsubsec:multiprocessing}
+Multiprocessing ist das zeitlich parallele Ausführen von Prozessen. Python bietet dafür die Bibliothek \texttt{concurrent.futures}. Über das Objekt \texttt{ProcessPoolExecutor} ist die Funktion \texttt{submit()} aufrufbar. Diese Funktion erwartet als Übergabeparameter den Prozess und die Parameter, die an den Prozess zu übergeben sind. Ihre Aufgabe ist die Aufstellung eines Future-Objekts, das die Ausführung des Prozesses darstellt \cite{multiprocessing_doc}.
+% https://docs.python.org/3/library/concurrent.futures.html
+
+\subsubsection{Pandas}
+\label{subsubsec:pandas}
+Pandas ist eine für Python bekannte Bibliothek. Ihre Funktionen sind die Analyse, Verarbeitung und Darstellung von Daten. Insbesondere bietet sie Funktionen und Datenstrukturen für Berechnungen mit numerischen Tabellen und Zeitreihen \cite{pandas-kurs}.
+Pandas liest csv-Dateien mit \texttt{read\_csv} \texttt{(filepath\_or\_buffer, sep=\_NoDefault.no\_default)} als DataFrame ein und verarbeitet diesen mit seinen eigenen zahlreichen Funktionen. %hier Quellenangabe: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html
+Der Übergabeparameter \texttt{sep} erwartet zur Kennzeichnung einen String, mit dem die einzelnen Elemente in der csv-Datei, welche den zugehörigem Dateipfad \texttt{filepath\_or\_buffer} hat, separiert sind.
+
+\lstinline{Series.unique()} gibt eindeutige Werte einer panda-Series zurück als pd.Series\footnote{import pandas as pd}.
+
+Außerdem erstellt die Funktion \lstinline{pd.arrays.IntervalArray.from_arrays()} aus zwei \myPython(arrays) die linke und rechte Grenze eines Intervalls und gibt diese als panda-Daten\-struk\-tur \myPython{IntervalArray} zurück.
+
+Pandas bietet zudem die Funktion \texttt{groupby()} an. Diese ordnet ein DataFrame mit Hilfe eines Mappers oder der Spalte einer panda-Series zu einer Gruppe zu.
+
+Die Funktion \texttt{apply()} wendet eine Funktion entlang einer gewählten Achse eines DataFrames an. Das an die Funktion übergebene Objekt ist demnach eine panda-Series. 
+
+Eine weitere für dieses Projekt hilfreiches Funktion ist \texttt{pd.to\_datetime()}, die eine Datumsangabe zu einem datetime-Objekt von Pandas umwandelt. Diese Datumsangabe kann z.~B. vom Typ \texttt{datetime} sein. Diese Datenstruktur ist von der Biblitiothek \texttt{datetime} (s. Abschnitt \ref{subsubsec:datetime}).
+
+
+%schreibt man das?
+Eine detailreichere Übersicht zu den genannten und weiteren Funktionen von Pandas stellt die Dokumentation von Pandas zur Verfügung \cite{pandas_doc}. %Quellenverweis
+%wie die mehreren Quellen angeben?
+% idee: diese und weitere Informationen sind unter der Documentation von Pandas zu finden
+
+% https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.groupby.html
+
+
+\subsubsection{Soundfile}
+\label{subsubsec:soundfile}
+
+Soundfile schreibt mit \lstinline{write()} und liest mit \lstinline{read()} Audiosignale in eine und aus einer Audiodatei. Diese Bibliothek ist für die Soundverarbeitung innerhalb Pythons geeignet, denn sie wandelt Audiosignale in numpy-Arrays\footnote{eine weitere Datenstruktur aus der Bibliothek numpy für Python} um. 
+
+ \texttt{Übergabeparameter:}
+ 
+ \texttt{file: Any} Angabe des Dateipfades
+ 
+\texttt{data: Any}  numpy-Array mit den Daten des Audiosignals
+
+ \texttt{samplerate: Any} Anzahl der Samples pro Periode
+
+\texttt{start: int = 0} Startpunkt, ab dem das Audiosignal einzulesen ist. Angabe in Samples.
+
+\texttt{stop: Any | None = None} Endpunkt, bis zu dem das Audiosignal einzulesen ist. Angabe in Samples. 
+
+Für \texttt{start} und \texttt{stop} gilt: Ein negativer Wert zählt die Samples startend vom Audiosignalende.
+
+\lstinline{Write()} bekommt die Parameter  \texttt{file}, \texttt{data}  und \texttt{samplerate} übergeben und liefert None zurück.
+\lstinline{read()} bekommt die Parameter  \texttt{file},  \texttt{start}, \texttt{stop} übergeben und gibt ein Tupel mit den Audiodaten als \texttt{ndarray} vom Typ \texttt{float64} und die Samplerate zurück.
+
+ % Quelle: https://python-soundfile.readthedocs.io/en/0.11.0/#module-soundfile
+
+
+
+\subsubsection{datetime}
+\label{subsubsec:datetime}
+
+Die Python-Bibliothek \texttt{datetime} ist zum Arbeiten mit Daten und Zeiten. %Sowohl die aktuelle Uhrzeit ist aufrufbar als auch Zeitdifferenzen berechenbar. 
+Die Bibliothek stellt einige Objekte wie \texttt{datetime} oder \texttt{timedelta} zur Verfügung, die den Zugriff auf verschiedene Funktionen, Konstruktoren und Attribute ermöglicht. 
+\texttt{datetime.} \texttt{timedelta} bekommt Werte für verschiedene Zeiteinheiten (die kleinste Zeiteinheit ist Millisekunden) und berechnet daraus eine Dauer um z.~B. Zeitdifferenzen zwischen zwei \texttt{datetime}- oder \texttt{date}-Objekten zu berechnen.
+
+\begin{python}
+    class datetime.timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=0, weeks=0)
+\end{python}
+            
+Zum Erstellen einer \texttt{datetime} oder einer \texttt{date} gibt es das Objekt datetime.datetime, welche Werte für Zeiteinheiten bis Mikrosekunden als kleinste Zeitheintheit bekommt.
+
+\begin{python}
+    class datetime.datetime(year, month, day, hour = 0, minute = 0, second= 0, microsecond = 0, tzinfo = None, *, fold = 0)
+\end{python}
+%A datetime object is a single object containing all the information from a date object and a time object.
+
+
+
+Zum Aufrufen der aktuellen Zeit ist datetime.now() verwendbar. Um die aktuelle Zeit in einer spezifischen Format als String zu speichern, ist die Funktion strftime() zu nutzen. Beispielsweise erstellt der Befehl 
+\begin{python}
+datetime.datetime.now().strftime("%Y%m%d")
+\end{python} 
+ein Datum mit der Angabe von Jahr, Monat und Tag. Die Angabe von \%Y, \%m und \%d repräsentieren die unterschiedlichen Zeiteinheiten. Die Informationen über die unterschiedlichen Bezeichnungen sind der Tabelle aus deren Dokumentation zu entnehmen \cite{datetime_doc}.
+
+\myPython{strptime()} bewirkt das Gegenteil. Diese Funktion nimmt ein Datum in einer bestimmten Formatierung als ersten Übergabeparameter entgegen. Der zweite Übergabeparameter teilt der Funktion mit, in welchem Format das Datum gespeichert ist, damit die Funktion daraus die Werte der einzelnen Zeiteinheiten interpretieren und auslesen kann \cite{datetime_doc}.
+
+%\myBash[basicstyle=\ttfamily, showstringspaces=false, commentstyle=\color{red}, keywordstyle=\color{blue},  breaklines=true]{datestamp = datetime.datetime.strptime(file_datestamp[0], '%YY%mM%dD%Hh%Mm%Ss%fms')}
+
+
+\subsubsection{ALSA}
+\label{subsubsec:alsa}
+ALSA ist eine unter Linux integrierte Soundsystemarchitektur. Sie besteht aus Linux-Kernelmodulen und betreibt Soundkarten. 
+% nomankaltur? \textbf{A}dvanced \textbf{L}inux \textbf{S}ound \textbf{A}rchitecture
+Mit den Funktionen von ALSA ist es möglich, Audio aufzunehmen und abzuspielen \cite{alsa_doc}. Mehr dazu in Abschnit /ref{subsubsection:sox}.
+
+\subsubsection{glob}
+\label{subsubsec:glob}
+
+Die Python-Bibltiothek glob bietet die Funktion glob(pathname, [...]).
+
+Damit sind alle Pfadnamen, die einem vorgegebenen Muster entsprechen, auffindbar. Das Muster gestaltet sich nach den Vorgaben der Unix-Shell für Pfadangaben. Die Reihenfolge der gefundenen Pfade ist zufällig.
+
+Platzhalter für variable (Pfad-)Angaben sind \textbf{*}, \textbf{?}, \textbf{[]}. Letzteres ist Platzhalter für Zeichenbereiche \cite{glob_doc}.
+
+    
+\subsubsection{Sox}
+\label{subsubsec:sox}
+Sox ist ein Audiotool zur Verarbeitung von Audios mit Filtern und Soundeffekten während der Konvertierung.
+
+%Sox kommt in diesem Projekt als Aufnahmesoftware und Audiovorverarbeitung zum Einsatz. 
+Mithilfe des Effekts \textit{silence} verwirft Sox Audioabschnitte, in denen Stille herrscht, schon während der Konvertierung. 
+Die Synopsis, der Befehle für die Audioaufzeichnung, ist wie folgt aufgebaut:
+
+%\begin{bash}[caption={Synopsis der Befehle für das Aufzeichnen von Audio mit Sox}]
+    
+    sox [global-options] [format-options] infile1 [[format-options] infile2] ... [format-options] outfile [effect [effect-options]] ...
+
+rec [global-options] [format-options] outfile [effect [effect-options]] ...
+
+%\end{bash}
+
+
+Beide Befehlen zeichnen Audio auf. 
+
+Die für dieses Projekt relevanten Operationen sind:
+
+\textbf{-t} Festlegung, mit welchem Audiogerät und Audioaufnahmesoftware Sox aufnimmt
+
+\textbf{-r} Angabe der Samplerate, welche für die Anzahl an Samples pro Periode steht
+
+\textbf{-b} Anzahl der Bits, mit denen ein Sample codiert ist
+
+\textbf{-e} Audiodekodierungstyp. 
+ Mit der Angabe von \textbf{signed-integer} ist festgelegt, dass die PCM\footnote{Pulse Code Modulation} %nomenklatur?
+ -Daten als vorzeichenbehaftete Ganzzahlen zu speichern sind. In der Regel kombiniert man diese Angabe mit einer 16- oder 24-Bit-Codierungsgröße. Hierbei steht der Wert null für die minimale Signalleistung.
+
+
+\textbf{silence} Effekt zum Trimmen von Stille während der Aufnahme. 
+Die Synopse lautet:
+
+\begin{lstlisting}[language=bash,caption={Synopse für den Befehl von Stille während der Konvertierung},]
+[-l] above-periods [duration threshold[d|%] [below-periods duration threshold[d|%]]
+\end{lstlisting}
+Die relevanten Operationen von \textbf{silence} sind: % oder texttt
+
+\textbf{above-periods} Audio ist am Anfang der Audio zu trimmen. Der eingestellte Wert legt fest, wie oft am Anfang Stille zu trimmen ist. Bei einem Wert von null ist das Trimmen ausgeschaltet, bei eins passiert es nur einmal. Ist der Wert größer als eins, schneidet sox mehrere Stellen mit Stille ab Audioanfang raus.
+
+\textbf{duration} Zeitangabe, wie lange Stille in einem Audiosegment kontinuierlich herrschen muss, damit Sox dieses entfernt.
+
+\textbf{threshold} Schwellwert für die Lautstärke. Ton unter diesem Wert ist als Stille definiert.
+
+\textbf{below-periods} Aufnahme ist am Ende der Audio zu trimmen. Der eingestellte Wert legt fest, wie oft am Ende Stille zu trimmen ist. Die Einstellung des Wertes funktioniert genauso wie bei \textbf{above-periods} nur rückwärts beginnend bei Audioende.
+
+\textbf{: newfile : restart} Dieser Befehl bewirkt einen Ketteneffekt durch den Operator \textbf{:} .  Mit \textbf{newfile} erstellt Sox aus der durch den vorherigen Effekt verarbeiteten Audio eine neue Audiodatei. Jede neu erstellte Audiodatei bekommt am Dateinamensende eine eindeutige Nummer angehängt. Danach springt Sox mit \textbf{restart} zum ersten Effektkettenglied. Der Prozess wiederholt sich.
+
+Beispielsweise kann ein Befehl für das Trimmen von Audio während der Aufzeichnung wie folgt geschrieben sein:
+\begin{lstlisting}[language=bash,caption={Besipiel eines SOX-Aufrufs mit Trimmen von Stille während der Konvertierung},]
+sox -t alsa hw:2,0 -r 48000 -b 16 -e signed-integer "song.wav" silence 1 0.50t 0.1% 1 2.0 0.1% : newfile : restart
+\end{lstlisting}
+
+%lieber in der Erklärung der Software
+Dieser Befehlszeile nimmt als default-Gerät ein extern eingestecktes Mikrofon mit der Kartennummer 2 und der Gerätenummer 0, gekennzeichnet durch \lstinline{hw:2,0}, und als Soundsystem \textbf{alsa}. 
+%Überhaupt erwähnen?
+Die von \textbf{alsa} erkannten Geräte mit den jeweiligen Nummerierungen von Karte und Gerät sind unter dem Befehl \lstinline{arecord -l} zu finden. 
+
+\lstinline[caption=Beispiel für eine mögliche Ausgabe]{card 2: Device [USB PnP Sound Device], device 0: USB Audio [USB Audio]}
+
+
+\subsubsection{gps}
+\label{subsubsec:gps}
+Für Python gibt es die Bibilothek gps
+
+- Einlesen der Daten, die das GPS Gerät ermittelt und an den Computer sendet
+- Mit den Funktionen latitude, Longitude und Uhrzeit auslesen
+- funktion zum Prüfen, ob das Gerät erkannt wurde oder so % also alle gneutzen Funktionen erklären
+
+Die Einbindung der Bibliothek und Datenauslesung des GPS-Geräts findet in Abschnitt ... statt.
+
+
+\subsubsection{Piso}
+\label{subsubsec:piso}
+
+Piso unterstützt die Berechnung von Intervallklassen in Pandas für Mengenoperationen wie Vereinigungs- oder Schnittmenge.
+
+Die Funktion \lstinline{piso.register_accessors()} ermöglicht Piso den Zugriff auf \lstinline{pd.arrays.IntervalArray}. 
+
+union
+Die Zusammenführung der Intervalle passiert durch die Funktion union, die bekommt ... übergeben und verbindet Intervalle mit gemeinsamen Schnittstellen.
+
+
+\subsection{Initialisierung}
+\label{sec:Initialisierung}
+
+% wohin mit dem Abschnitt Start per kabelloses Netzwerk?
+
+Das Modell \ref{fig:model_app} zeigt, dass die Initialisierung von main.py in drei zusammenfassende Schritte unterteilt ist:
+
+\begin{enumerate}
+    \item Start des Programms über einen Shell-Befehl
+    \item Einlesen der Startargumente und konfigurieren
+    \item Start der drei parallelen Prozesse mit dem \myPython{ProcessPoolExecutor()} aus der //concurrent.futures-Bibliothek
+\end{enumerate}
+
+
+Der Start des Programms über die Shell ist am Ende diese Kapitels in Abschnitt \ref{subsubsec:start} erklärt.
+
+Schritt 2 passiert drei Unterschritte.
+
+Mit
+\begin{lstlisting}
+    parser = argparse.ArgumentParser(description="Start audio recording session")
+\end{lstlisting}
+
+kann \lstinline{main.py} auf die Startargumente zugreifen.
+Danach ist festgelegt, wie mit diesen Startargumenten umzugehen ist. Ein Startargument ist \texttt{region}.
+%beispiel dazu noch
+\begin{python}
+parser.add_argument(
+        "--region", default="COUNTRIES/world/", help="Path to folder where audiofiles, analyzed audiofiles and results are saved."
+)
+
+cfg.REGION = args.region{}
+
+\end{python}
+
+Hier ist festgelegt, dass der Default-Wert von \texttt{region} ein Dateipfad ist. Dieser Wert wird als Konfiguration in \lstinline{config.py} gespeichert.
+
+%hier das GPS Gerät erwähnen
+
+% Schritt 2
+Wenn das Startargument \texttt{-{}-config} mit dem Wert True übergeben ist, versucht das Programm die Koordinaten und die Zeit vom GPS-Gerät für die Postfilterung zu Nutzen. Was die Postfilterung ist, erklärt Abschnitt \ref{subsubsec:speiceslist}. Da das Gerät aber nicht sofort und überall Koordinaten findet, wartet die Funktion \myPython{getCoordinates()} nach diesen solange, bis der*die Anwender*in diesen Vorgang abbricht oder das GPS-Gerät die Koordinaten gefunden hat. Bricht der*die Anwedner*in das Programm vorher ab, fragt jenes ihn*sie, ob es die Audiosession dennoch fortgeführt werden soll oder abbrechen soll. Hierfür ist der*die Anwender*in zur Eingabe aufgefordert. \textit{y} steht für \textit{yes} und \textit{n} für \textit{no}.
+Hat der*die Anwender*in die Startargumente \texttt{-{}-lat}, \texttt{-{}-lon} und \texttt{-{}-week} übergeben, nutzt das Programm diese, ansonsten nutzt es die Default-Werte, die alle minus eins sind und somit nutzt das Modell keine Koordinaten für die Vorhersage. Sollte das GPS-Gerät die Zeit nicht finden, wird die Offline-Zeit genutzt. Bei Diskrepanz mit der Echtzeituhr ergibt sich ein Zeitfehler, der bei der Auswertung nach der Audiosession zu beachten ist.
+
+\myPython{def getCoordinates()}
+
+
+%schritt 3
+Zum Speichern der Config-Datei ist in main.py die Funktion \myPython{saveConfigsAsJSON(configs:str, cfpath:str)} definiert. Diese erwartet für den Parameter \myPython{configs} das Dictionary mit den Konfigurationen, aufrufbar über die Funktion \myPython{getConfigs()} von \myPython{config.py}, und den Dateinamen der JSON-Datei, in den sie das Dictionary schreiben soll.
+
+\begin{python}
+    def saveConfigsAsJSON(configs: Dict, cfile_path: str):
+        configs_json = json.dumps(configs)
+        with open(cfile_path, 'w') as cfp: 
+            cfp.write(configs_json)
+            
+    configs = cfg.getConfig()
+    cfname = datetime.now().strftime("%Y%m%d") + '.json' # configs_filename
+    cfpath = os.path.join('configs_files', cfname)
+    saveConfigsAsJSON(configs, cfpath)
+
+\end{python}
+
+Schritt drei ist der Aufruf aller drei Parallelprozesse.
+
+%Dabei ist bewusst zuerst analyze aufgerufen, um zu ermöglichen, dass erst das Netz geladen wird, bevor die Audiosession mit der Aufnahme anfängt. Dies ist für die nicht so relevanten Prozesse ein Zeitvorteil
+%noch umsetzten und testen!
+
+\begin{python}
+      with concurrent.futures.ProcessPoolExecutor() as executor:
+        p2 = executor.submit(analyze, cfpath)
+        p1 = executor.submit(rec, cfg.DURATION_HOURS, cfg.DURATION_MINUTES, cfg.AUDIO_PATH, cfg.AUDIO_TYPE)
+        p3 = executor.submit(slice_audio, hours = cfg.DURATION_HOURS, minutes = cfg.DURATION_MINUTES, apath = cfg.AUDIO_PATH, aapath = cfg.ANALYZED_bei seinemAUDIO_PATH, atype = cfg.AUDIO_TYPE)
+\end{python}
+
+
+\subsection{Aufnahme}
+
+\subsubsection{Programmfunktionen und -parameter sowie Sox-Aufruf}
+Für die Aufnahme ruft \textit{main.py} die Funktion \myPython{rec()} auf. 
+
+%\begin{python}{def rec(hours: int, minutes: int, apath: str, atype:str)} \end{python}
+
+Die Werte der übergebenen Parameter \texttt{audio\_path} und \texttt{atype} initialisieren die Umgebungsvariablen  \texttt{audio\_path} und \texttt{audio\_type}. Diese nutzt Sox (s. Abschnitt \ref{subsubsec:sox}) bei seinem Aufruf. 
+
+
+\begin{bash}[frame=shadowbox]
+    sox -t alsa hw:2,0 -r 48000 "$audio_path$(date +"%YY%mM%dD%Hh%Mm%Ss%3Nms_").$audio_type" silence 1 0.50t 0.1% 1 2.0 0.1% : newfile : restart
+\end{bash}
+
+
+Der Datumsstempel ist im Dateinamen festgehalten, um später wie in Abschnitt \ref{subsec:änderungen} erwähnt, einen Datumsstempel in der Ergebnistabelle hinzuzufügen.
+
+Umgeben ist der Aufruf der Funktion mit dem Zeitbegrenzer.
+
+\begin{python}
+    t_end = time.time() + hours * 3600 + minutes * 60
+    while time.time() < t_end: 
+        # rufe sox auf    
+\end{python}
+
+
+\subsubsection{Mikrofonrauschen und Schwellwertanpassung}
+\label{subsubsec:mikrofonrauschen}
+Der gewählte \texttt{threshold} soll den Schwellwert für Stille festlegen. Da analoge Audio immer mit einem Rauschen durch das Mikrofon unterlegt ist, ist der Schwellwert mit einer bestimmten Toleranz zu wählen. Diese kann der*die Anwender*in selbst einstellen, da jedes Mikrofon durch seine Eigenschaften unterschiedlich starkes Rauschen verursacht. Für das hier gewählte Mikrofon ist durch Testversuche der \texttt{threshold} von \texttt{0,062} gewählt, das der Rauschlautstärke des Mikrofons näherungsweise entspricht. Schwellwert soll also die Lautstärke des Rauschens selbst sein.
+Zur Bestimmung dieses Wertes ist das Rauschen aufzunehmen und daraus ein Mittelwert zu ermitteln. Es bedarf aber noch einige Versuche diesen Wert anzupassen bis das Ergebnis zufriedenstellend ist. Da auch das Rauschen kein konstanter Wert ist, sollte eine ausreichende Toleranz über die durchschnittliche Rauschlautstärke gewählt sein.
+
+\subsection{Analyse}
+
+
+\subsubsection{Vorstellung des BirdNet-Analyzers}
+\label{subsubsec:vorstellung}
+
+Für die Erkennung von Vogelgesang nutzt die Software das Modell vom BirdNET-Analyzer \cite{kahl2021birdnet} sowie weitere Programme und Funktionen von dessen API. Die erste Gitversion heißt BirdNET, ist aber veraltet. Die neue Version ist unter dem Namen BirdNET-Analyzer herausgegeben. Die Entwickler geben an, diese Version weiterhin zu updaten.
+
+Wie BirdNET grob funktioniert, beschreiben die folgenden Zeilen. Für genauere Information über BirdNET, wie es zu installieren und anzuwenden ist, ist auf das Git-Repository \cite{birdnetGit} verwiesen.
+
+
+%wie funktioniert BirdNET -> erklären, wie es angewandt
+%Zum Analysieren von Audiofiles ist das Programm analyze.py mit den entsprechenden Startargumenten aufzurufen. Die verschiedenen Startargumente sind für verschiedene Einstellungen. 
+%Als Beispiel :
+
+%python3 analyze.py --i example/ --o example/
+
+%muss man das erklären?
+%noch hinzufügen was --i und --o sind
+%Dieser Terminalbefehl ruft analyze.py auf und compiliert ihn mit Python3. Dabei liest analyze.py die Startargumente ein. Als Input ist der Ordner example angegeben (gekennzeichnte mit \texttt{--i} davor), aus dem das Programm alle vorhandenen Audiofiles analysiert. Dabei müssen die Audiosignale in 48000 Hz  kodiert sein. Bei der Analyse schneidet das Programm die Audio in Drei-Sekunden-Segmente und speist sie dann ins neuronale Netz. Die Ergebnistabelle der analysierten Audio ist im Ornder \texttt{example} gespeichert (gekennzeichnet mit \texttt{--i} davor). 
+
+%kürzere Version
+Über verschiedene Terminalbefehle sind verschiedene Programme und Funktionen vom BirdNET-Analyzer aufrufbar. Zur Analyse von Audiodateien ist das Pythonskript \textit{analyze.py} mit den gewünschten Einstellungen übergeben als Startargumente aufzurufen.
+
+
+Informationen zu allen Startargumenten ist in der ReadMe im Git von BirdNET zu finden.
+
+Nach der Analyse der Audiodatei(n) gibt BirdNET die Default- oder vom Anwendenden gewünschte Ergebnistabelle zurück. 
+Je nach Ergebnistabelle können bei jeder erkannten Vogelart in einem bestimmten Zeitabschnitt in der Audio verschiedene andere Informationen hinterlegt sein, die zur Weiterverarbeitung nutzbar sind. 
+
+
+
+\subsubsection{Änderungen in BirdNET}
+\label{subsec:änderungen}
+
+Das Schaubild %besseres Wort?
+\ref{fig:model_app} zeigt, dass die Funktion \myPython{analyze()} aus \myPython{main.py} die Schnittstelle zum BirdNET-Analyzer ist. 
+
+Bei Aufruf von \myPython{analyze()}, ruft diese wiederum per Shell-Befehl das Programm \textit{analyze.py} von BirdNET auf.
+%erwähnen dass es mit os.system gemacht wird?
+Statt wie vorher in Abschnitt \ref{subsubsec:vorstellung} gezeigt, die Startargumente an \textit{analyze.py} zu übergeben, bekommt \textit{main.py} diese Startargumente und lädt sie als JSON-Datei in den Ordner \textit{configs-files}.
+Diese Änderungen hat den Vorteil, dass die Einstellungen wiederverwendbar sind. Auf die genaueren Umsetzung geht der Abschnitt \ref{subsec:configs} ein.
+
+
+
+\myPython{analyze()} bekommt den Dateinamen der JSON-Datei übergeben. Mittels des Befehls \myPython{os.system()} ruft sie \textit{analyze.py} auf und übergibt als Startargument diesen Dateinamen. 
+
+\begin{python}
+
+if __name__ == "__main__":
+    # Freeze support for executable
+    freeze_support()
+    
+    parser = argparse.ArgumentParser(description="Analyze audio files with BirdNET")
+    
+    parser.add_argument(
+        "--configs",
+        type =str,
+        default=None,
+        help="Path to configs. Defaults to None. If set, --configs is ignored.",
+    )
+
+    args = parser.parse_args()
+    cfile_path: str = ""
+    print(type(cfile_path))
+    configs_json = ""
+    if args.configs is not None :
+        cfile_path = str(args.configs)
+        with open(cfile_path, 'r', encoding='utf-8') as cfp:
+            configs_json = json.load(cfp)
+
+        cfg.setConfig(configs_json)
+    \end{python}
+
+\textit{analyze.py} kann mit der Angabe des Dateinamens auf die gewünschte Konfigurationsdatei zurückgreifen. 
+
+
+
+Da es sich bei diesem Vorgehen um eine mehrstündige Aufnahme handelt, sind für eine besseren Auswertung der Ergebnisse % (aus Sicht eines Ornithologen) besser erklären, warum das besser ist
+zu den Ergebnistabellen csv, table und R zwei Datumsstempel im UTC-Format beigefügt. 
+
+%Bilder zu den jeweiigen Tabellen
+
+%diesen Absatz erst bei der Versuchsdurchführung
+%oder ein extra Kapitel wo erstmal Tests durchgeführt wurden, bevor man mit der tatsächlichen Versuchsdurchführung gestartet hat.
+% plus ein Kapitel über die GPU und warum sie nicht nutzbar ist (hersteller bietet dafür den Support nicht mehr an und laut anderen Quellen lohnt es sich nicht, Quellen noch angeben)
+
+
+%bessere Überschrift
+\subsubsection{analyze.py}
+Beim den Aufruf von analyze.py sind % # TODO:Text hinschreiben
+
+\subsubsection{Effizienzsteigerung} % TODO: Löschen?
+Eine Anforderung des Projekts ist, dass der mobile Computer mit der Stromversorgung der Powerbank für mindestens 24 Stunden auskommt. Zudem soll die Analyse möglichst in Echtzeit und zeiteffizient sein. Um diese Anforderungen zu optimieren, gibt es Tests zu unterschiedlichen Einstellungen und Szenarien, die diese Eigenschaften beeinflussen können. Dazu gehört zum einen die Batchsize. Diese hat eine Effekt auf die Performance des Modells sowie auf die Trainingszeit. Der größte Vorteil einer hohen Batchsize ist, dass Hardwarebeschleuniger wie GPU damit bessere Performance erbringen können sowie einen positiven Effekt auf die Zeit haben.
+
+
+%zusätzlich mit Einstellen Priorität
+%overlap
+
+\section{Erste Versuchsdurchführungen} %FIXME: entweder was zu overlap schreiben oder alles rauswerfen
+
+%hier erklären, dass man versucht hat, die Batchsize, Overlap und GPU zu testen
+%die Ergenbnisse validiert und anhand dessen das weitere Vorgehen durchgegangen
+
+
+Zwar ist der Jetson mit seiner CPU relativ 
+
+
+Zwar hat der Jetson Nano mit seiner GPU eine hoher Leistungsfähigkeit, dennoch sollen die hier vorgenommenen Test die Effizienz steigern. Dafür ist zum einen die optimale Batchsize bestimmt worden, die mmmm vereint.
+
+default-Wert von Batchsize
+
+sensitivity und overlap haben Auswirkungen auf die Rechenleistung
+
+-> Test und deren Ergebnisse
+
+Auch \texttt{overlap} hat einen Einfluss auf die Zeitperformance des Modells. 
+Da das Programm eine Audio immer in Drei-Sekunden-Segmente schneidet, analysiert das Netz auch immer nur diese drei Sekunden. Das hat zum Nachteil, dass eventuell das Programm mitten im Vogelgesang die Aufnahme trennt. Das kann wiederrum negative Effekte auf die Vorhersagbarkeit haben.
+%was ist overlap
+Mit Overlap ist beeinflussbar, wie das Programm die Audio zuschneidet. Zwar kann das Netz immer nur 3 Sekunden auf einmal analysieren, aber diese 3-Sekunden-Intervall verschiebt sich auf der Audio immer nur um den gegebenen Overlap-Wert. 
+Als Beispiel, ein \texttt{overlap} von 0 bewirkt, dass das Programm alle drei Sekunden einen Schnitt macht. Mit einem \texttt{overlap} von 1 startet das Modell die Analyse auch bei zwei Sekunden und analysiert dann in drei Sekundenschritten die Audio.
+
+%noch ein paar Tests mit dem Overlap machen und dann bei der Versuchsdurchführung, also echter Versuch gucken, ob der Jetson damit noch mithält
+
+\subsection{Startargumente und Konfigurationen}
+\label{subsec:configs}
+
+Wie schon in Abschnitt \ref{subsec:änderungen} erwähnt, bekommt nicht mehr analyze.py von BirdNET die Startargumente, sondern das Hauptprogramm main.py. 
+Diese Startargumente sind in der Konfigurationsdatei \texttt{config.py} von BirdNET hinterlegt.
+
+%erklären, dass diese Startargumente in der Config-Datei hinterlegt sind
+
+
+Neben dieser Änderung gibt es weitere Änderungen bei den Startargumenten selbst. Das Programm nimmt einige zusätzliche Startargumente an, andere sind aus der Liste entfernt worden.
+Diese Änderungen sind in diesem Abschnitt erläutert. 
+
+%Für den Rest auf die ReadMe datei hinweisen -> was soll in der ReadME datei angegeben sein?
+
+
+Die hinzugefügten Startargumente sind \texttt{-{}-hour}, \texttt{-{}-minute}, \texttt{-{}-region}, \texttt{-{}-atype}, \\\texttt{-{}-coordinates}, \texttt{-{}-trim}, \texttt{-{}-threshold}, \texttt{-{}-rtpye2}, \texttt{-{}-delete}
+
+\texttt{-{}-hour} gibt die Stunden an, die aufzuzeichnen sind. Default-Wert ist null.
+
+\texttt{-{}-minute} gibt die Minuten an, die aufzuzeichnen sind. Default-Wert ist 20.
+
+\texttt{-{}-atype} legt das gewünschte Audioformat fest. Dazu sei angemerkt, dass für jedes Audioformat ein sogenannter \textit{handler} zu installieren ist \cite{debian-libsox}. 
+
+%mehr dazu im ReadME
+% Alle handler lassen sich mit dem Befehl sudo apt install libsox-fmt-all installieren
+%https://packages.debian.org/sid/libsox-fmt-all
+\texttt{-{}-region} gibt an, in welchem Ordner Audioaufnahmen, Ergebnisse und die daraus zugeschnittenen Audios zu speichern sind. Dieser Ornder hat dabei immer zwei Unterordner. In den Unterornder \\\texttt{audiofiles} speichert \myPython{rec()} die aufgenommenen Audios und  nach der Analyse verschiebt \myPython{analyze()} die Audios in den Unterordner \texttt{analyzed\_audiofiles}, wobei jede Audiodatei nochmal in einen eigenen Ordner zusammen mit den dazugehörigen Ergebnissen und den zugeschnittenen Audios gespeichert ist.  Der Default-Wert von \texttt{-{}-region} ist \texttt{COUNTRIES/world}. Dieser Pfad befindet sich auch schon im Projektverzeichnis.
+
+Der Variablenname \texttt{region} soll den*die Anwender*in dazu motivieren, den Ordner nach dem Standortrt zu benennen, wo er*sie die Aufnahme durchgeführt hat. Optimalerweise sollte der Ordner dem Ordner \texttt{COUNTIRES} untergeordnet sein. Damit entwickelt sich eine strukturierte Übersicht über alle Audiosessions, die an verschiedenen Standorten entstanden sind.
+
+\texttt{-{}-coordinates} ist eine boolesche Variable, die bei dem Wert True dem Programm mitteilt, dass es für die Analyse die Koordinaten vom GPS-Gerät nutzen soll. %ein artikel über gps schreiben
+
+\texttt{-{}-threshold} hat einen Default-Wert von 0.062. Dieser definiert den Schwellenwert für den Silence-Effekt wie in Abschnitt \ref{subsubsec:sox} erklärt. Da dieser Wert aber auf das hier genutzte Mikrofon abgestimmt ist, steht dem*der Anwender*in offen, diesen Wert für sein*ihr Mikrofon oder die eigenen Präferenzen anzupassen. So ist es auch möglich mit einem größeren Schwellenwert den Aufnahmeradius einzuschränken und mit einem kleineren Radius zu erweitern.  
+
+\texttt{-{}-trim} legt fest, was die maximale Audiolänge einer einzelnen Aufnahme sein darf, wenn der Silence-Effekt nicht vorhehr selbst die Audio zuschneidet. Damit ist bei einem zu kleinen Threshold für Silence verhinderbar, dass eine Audiodatei zu lang wird oder gar so lang wie die gesamte Audiosession ist.
+
+\texttt{-{}-delete} ist Default auf False, was heißt, dass das Programm die Originalaufnahmen nach der Auswertung nicht löscht. Durch setzen auf True ist das Gegenteil der Fall. Dieses Startargument erfüllt die Anforderungen für die Einhaltung des Gesetztes welches die Vertraulichkeit des Wortes bewahrt.
+
+
+Entfernte Startargumente sind \texttt{-{}-i} und \texttt{-{}-o}. 
+\texttt{-{}-i} gab an, in welchem Ordner sich die zu analysierende Audiodatei befindet.
+\texttt{-{}-o} gab an, in welchen Ordner die Ergebnisse der analysierten Audio zu speichern sind.
+
+Zu den hinzugefügten Konfigurationen gehören \lstinline{AUDIO_PATH} und \lstinline{ANALYZED_AUDIO_PATH}. \lstinline{AUDIO_PATH} speichert die Pfadangaben \textit{audiofiles/} und \lstinline{ANALYZED_AUDIO_PATH} \textit{analyzed\_audiofiles/}. Beide Variablen beinhalten also den Pfadnamen des Unterordners von \texttt{-{}-region}.
+
+
+%\paragraph{Ergebnisse}
+% \texttt{-{}-rtype} bestimmt den Typ der Ergebnistabelle. Da das Programm standardmäßig eine CSV für die Ergebnistabelle erstellt, erzeugt dieses bei der Angabe von \texttt{-{}-rtype} zusätzlich eine weitere Ergebnistabelle. Diese sind auswählbar zwischen R, Tabelle, Kaleidoscope und Audacity mittels der jeweiligen Werte [\texttt{r}, \texttt{table}, \texttt{audacity}, \texttt{kaliedoscope}].
+
+\texttt{--rtype} bestimmt den Typ der primären Ergebnistabelle. Zu jedem analysierten Audiosegment erstellt das Programm eine Tabelle, die standardmäßig als CSV formatiert ist. Optional speichert das Programm die Tabelle stattdessen als Plain-Text-Tabelle.
+
+%eventuell prüfen, ob es einen zeitlichen unterschied zwischen table und cvs als Ausgabe gibt. Braucht table länger als csv? Wir wirkt sich die Geschwindigkeit dabei aus, wenn man zwei Tables ausgibt
+
+% \texttt{-{}-rtype2} ist optional. Da zur Auswertung das Programm automatisch entweder eine Tabelle als CSV- oder als Text-Datei erstellt, gibt es das Startargument \texttt{-{}-rtype2}. Jenes legt den Dateityp fest, indem die Ergebnisse zu speichern sind. Je nach Dateityp können die Progamme R, Audacity oder Kaleidoscope diese Ergebnisse lesen und auswerten.
+
+% \texttt{--rtype2} ist ein optionales Startargument. Um eine weitere Tabelle als nur eine CSV oder Table für andere Arten der Auswertung zu erzeugen. Mit Angabe von \texttt{r}, \texttt{kaleidoscope} oder \texttt{audacity} speichert das Programm die formatierte Tabelle in den Formaten \textit{.r}, \textit{.csv} oder \textit{.txt}, welche entsprechend von den Programmen R, Kaleidoscope oder Audacity lesbar sind.
+
+\texttt{--rtype2} ist ein optionales Startargument, das es ermöglicht, zusätzlich zur CSV- oder Plain-Text-Tabelle eine weitere Tabelle für unterschiedliche Auswertungsarten zu erzeugen. Bei Angabe von \texttt{r}, \texttt{kaleidoscope} oder \texttt{audacity} speichert das Programm die formatierte Tabelle in den Formaten \textit{.r}, \textit{.csv} oder \textit{.txt}, die entsprechend von den Programmen R, Kaleidoscope oder Audacity gelesen werden können.
+
+%\paragraph{Wiederverwendung von configs}
+\texttt{-{}-configs} ermöglicht die Wiederverwendung von alten Konfigurationen.
+Das Programm speichert bei jedem Start die dazu festgelegten Konfigurationen im Ordner \texttt{configs\_files}. Der Dateiname ist das aktuelle Datum. Mit der Angabe des Dateinamens der Konfigurationsdatei, welche dem Muster \texttt{YYYYMMDD.json}\footnote{Y=Jahr (Year), M=Monat (Month), D=Tag (Day)} entspricht, sind alle Konfigurationen von der gewählten Konfigurationsdatei für den neuen Start festgelegt. Trotz Angabe von weitere Startargumenten, ignoriert das Programm jene.
+% config\_\%Y\%M\%D.json lieber so?
+
+
+\subsubsection{Species List}
+\label{subsubsec:speiceslist}
+
+Ein Ziel dieses Projektes ist die Differenzierung zwischen Vogel und Nicht-Vogel. Dabei sind alle Audioabschnitte, in denen das Netz ein Vogel erkannt hat, gesondert abzuspeichern und alle Nicht-Vogel zu ignorieren oder sogar zu verwerfen.
+
+
+Die Liste aller Vogelarten basiert auf der eBird checklist frequency \cite{bird-glossary}. % FIXME: Quelle wird nicht im Verzeichnis angezeigt
+Dies ist ein Vogelglossar mit zahlreichen Vogelarten. Zu jeder Vogelart ist mit Angabe von Latitude, Longitude und Kalenderwoche die Wahrscheinlichkeit dessen Auftretens in bestimmten Breiten- und Längengraden zu einer bestimmten Zeit im Jahr hinterlegt. 
+Das neuronale Netz ist mit diesen Daten trainiert. Da das Netz aber auch erkennen sollte, wann es sich bei bestimmten Geräuschen um Nicht-Vogelarten handelt, sind in der Liste mit den Klassenvorhersagen auch Nicht-Vogel wie Elektrowerkzeuge  (Power tools) oder menschliche Stimmen (Human vocal). 
+%warum soll das Netz nicht-Vogel erkennen
+Dies dient beim Training des Netzes dazu, verstärkt den Unterschied zwischen Vogelstimmen und Nicht-Vogelstimmen zu erkennen.
+
+Da also in der Ergebnistabelle auch Nicht-Vogelarten stehen können, die das Programm nach der Analyse zum Zuschneiden der Audios nutzt, sollte das Programm die Nicht-Vogelarten herausfiltern.
+
+Umgesetzt ist das mit einem Postfilter. BirdNET hat ein Startargument \texttt{-{}-slist}. Dieses Argument erwartet einen Pfad zu einer Textdatei, die zur Filterung der Ergebnisse nur die Vogelarten enthält, die am Ende tatsächlich in der Ergebnisstabelle stehen dürfen. 
+Für dieses Projekt ist die Liste mit den Labels (in der Version 2.4), welche im Ordner \texttt{labels/V2.4} vorliegt,
+überarbeitet. Alle Nicht-Vogel sind aus der Liste manuell entfernt und diese Liste ist im Ordner \texttt[breaklines=true]{multiply\_species\_lists/filtered\_non\_birds} mit dem Dateinamen \texttt{filtered\_non\_birds.txt} gespeichert. 
+Der Pfad zu dieser Liste ist als default-Wert vom Argument \texttt{-{}-slist}. Diese Datei enthält alle Labels auf Englisch. Somit stehen, ohne die Erstellung einer eigenen Speziesliste mit der gewünschten Sprache, die Vogelarten in der Ergebnistabelle auf Englisch.
+Durch das Erstellen einer eigenen Speziesliste mit einem Standortfilter erstellt das Programm \myPython{species.py} von BirdNET eine gefilterte Liste.
+
+
+Eine benutzedefinierte Erstellung einer Speciesliste ermöglicht das Programm ebenfalls.
+Zur Erstellung einer Speziesliste bietet BirdNET das Python-Programm \myPython{species.py}. Unter Angabe von Longitude, Latitude und Woche generiert das Programm einen Standortfilter. Dieser Standortfilter ist durch den Wert  \texttt{sf\_thresh} beeinflusst. Dieser Wert ist die Schwelle für die Mindesthäufigkeit einer Vogelart, die am gegebenen Standort vorkommen muss. Vogelarten, dessen Vorkommensswahrscheinlichkeit größer als der Schwellwert sind, stehen dann in der Speziesliste. 
+Die Wahrscheinlichkeiten mit den Daten aus Longitude, Latitude und Woche sind im Vogelglossar hinterlegt. Durch das Erstellen von einer nach standortgefilterten Speziesliste sind auch die Nicht-Vogelarten herausgefiltert, denn diese sind im Vogelglossar nicht hinterlegt.
+
+%FIXME: Text einfacher, schlanker und übersichtlicher gestalten und schreiben, dass sowohl mit main.py als auch mit species.py eine Liste erstellt wird
+
+
+% erklären dass man eine specieslist mit species.py erstellen kann oder beim aufruf von main.py
+
+
+\subsection{Weiterverarbeitung}
+
+Nach der Analyse kommt das \textit{Slicen}. Die Ergebnistabelle besagt, in welchen Zeitintervallen das Netz einen Vogel erkannt hat. \myPython{read_csv()} aus der Pandas-Bibliothek %nochmal verweis auf den Abschnitt?
+liest die Tabelle und gibt sie als DataFrame zurück.
+%Dafür ist die Ergebnisstabelle auch entsprechend aufgebaut und zwar nach Spalten. 
+
+Standardmäßig ist die Tabelle als CSV für die Weiterverarbeitung gewählt. Diese enthält die Start- und Endzeiten von jedem Drei-Sekunden-Segment, welcher mit einer Vogelart klassifiziert ist.
+
+Die Funktion \myPython{slice()} führt dabei sechs Arbeitsschritte aus.  %besser Wort als Hauptschritt
+
+
+\begin{enumerate}
+    \item\label{item-2:schritt0} neue Ordner laden
+    \item aus den Ordnern Tabelle und Audio laden
+    \item Tabelle nach Vogelart gruppieren
+    \item Zeitintervalle zu jeder Vogelart erstellen
+    \item Vereinigungsmenge der Zeitintervalle zu den einzelnen Vogeln berechnen
+    \item Audiofiles einlesen, daraus das gegebene Zeitintervall herausschneiden, Datei entsprechend benennen und im selben Ordner wieder ablegen. 
+\end{enumerate}
+
+% \label{para:0} prüfen ob der Timer abgelaufen ist
+% 1. neue Ordner laden
+% 2. aus den Ordner Tabelle und Audio laden
+% 3. Tabelle nach Vogelart gruppieren
+% 4. Zeitintervalle zu jeder Vogelart erstellen
+% 5. (neue Funktion) Vereinigungsmenge der Zeitintervalle zu den einzelnen Vogeln berechnen
+% 6. (neue Funktion) Audiofiles einlesen, daraus das gegebene Zeitintervall herausschneiden, Datei entsprechend benennen und im selben Ordner wieder ablegen.
+
+%als Pseudocode?
+
+In Schritt \ref{item-2:schritt0} passieren folgende UNterschritte, wenn der Timer abgelaufen ist
+
+\begin{enumerate}
+    \item \textbf{while} die Audiosession noch läuft, führe den nächsten Schritt aus
+    \item \textbf{if} die vom Anwendenden gesetzte Zeit ist vorbei
+    \item warte nochmal einige Sekunden, falls BirdNET noch Audiofiles analysiert.
+    \item \textbf{if} keine Audios mehr im Ornder \textit{audiofiles} sind, gehe zum nächsten Schritt
+    \item \textbf{if} keine analysierten Audios noch zu verarbeiten, beende die while-Schleife aus Schritt 1 
+\end{enumerate}
+
+Dieses Verfahren soll sicherstellen, dass nach Ablauf des Timers auch alle noch zu analysierenden Audios fertig verarbeitet sind.
+
+Das Laden der während der Audiossesion neu generierten Ordner (s. Schritt \ref{item-2:schritt0}) realisiert sich durch die Berechnung der Differenz zwischen den alten und neuen Ordner.
+
+\begin{python}
+        analyzed_audio_folders =  glob.glob(cfg.ANALYZED_AUDIO_PATH + '/*')
+        new_folders = set(analyzed_audio_folders).difference(set(old_folders))
+        print(f"new_folders: {new_folders}")
+\end{python}
+
+Aus den geladenen Ordnern ruft das Programm den Pfad der Ergebnistabelle und der Audiodatei mit der \myPython{glob()}-Funktion (s. Abschnitt \ref{subsubsec:glob})
+auf. Mit dem Pfad zur Tabelle kann \lstinline{read_csv()} daraus ein DataFrame erstellen (s. Abschnitt \ref{subsubsec:pandas}). Danach gruppiert \myPython{groupby()} das DataFrame nach den erkannten Vogelarten und \myPython{apply()} sortiert zu jeder Vogelart das entsprechende Intervall, welches die Funktion \myPython{from_arrays()} zum Datenobjekt \myPython{IntervalArray} aus den Einträgen in den Elementen der Tabelle konstruiert hat. %Letzter Satz besser machen
+Die Funktion \myPython{cut_audios} bekommt einen erkannten Vogel, die dazugehörigen Zeitintervalle und den Pfad zu Audio.
+
+
+\begin{lstlisting}[caption={Einlesen der Ergebnistabelle und des Audiodateinamens}
+]
+        try:
+            for this_folder in new_folders:
+                table_path = glob.glob(this_folder + "/*.csv")[0] 
+                table = pd.read_csv(table_path, sep=',')
+                audio_path = glob.glob(this_folder + "/*.wav")[0]
+                print(f"Audio_Path: {audio_path}")
+                rec_birds = table['Common name'][:].unique()
+                time_intervals = (table.groupby('Common name').apply( 
+                    lambda table : pd.arrays.IntervalArray.from_arrays(
+                        table['Start (s)'],
+                        table['End (s)'],
+                        closed = 'right'
+                    )))
+                for bird in rec_birds:
+                    cut_audio(bird, time_intervals[bird], audio_path)
+\end{lstlisting}
+\label{lst:tabelle-einlesen}
+
+In dieser Funktion findet das eigentliche \textit{slicen} statt. Soundfile liest die Audiodatei ein, dabei immer nur das Segment im aktuellen Intervall. 
+Zur Berechnung der Grenzen dieses Audiosegments sei kurz erklärt, dass ein digitales Audiossignal immer aus mehreren Samples (Proben) besteht. 
+
+Die Umwandlung eines analogen in ein digitales Signals realisiert sich durch Quantisierung und Abstatung, wodurch auch immer Informationen verloren gehen.
+
+Da hier grundsätzlich das Netz nur Audiosignale mit \num{48000} Samples pro Sekunde (oder auch Hertz) analysiert, sind die Audiosignale auch in \SI{48000}{\hertz} aufgenommen. Zur besseren Übersicht der Ordnerstruktur und Dateinamen bekommen die zugeschnittenen Audios eine Kennung mit der darin erkannten Vogelart sowie einen Datums- und Zeitstempel. 
+
+\begin{lstlisting}
+    def cut_audio(bird, interval_array, audio_path):
+
+    for interval in interval_array:        
+        samplerate = 48000
+        begin = int(interval.left * samplerate)
+        end = int(interval.right *samplerate)
+        data, samplerate = sf.read(file=audio_path, start = begin, stop=end)
+        sf.write(os.path.join(os.path.dirname(audio_path), f"rec_{bird}_{begin}_{end}.wav"), data=data, samplerate=samplerate)
+\end{lstlisting}
+
+Weiter geht es mit dem Code aus \ref{lst:tabelle-einlesen}.
+\begin{lstlisting}
+    if table_path.rsplit(".", 1)[-1].lower() in ['csv']:
+                    old_folders.append(this_folder)
+                    
+                    print(f"Append this_folder-> {this_folder}")
+        except Exception as ex:
+            time.sleep(3)
+            print("Warte auf Ergebnisse der Analyse")
+        
+    return ("Done sorting")
+\end{lstlisting}
+Wenn  im Pfad zur Ergebnistabelle auch tatsächlich eine Ergebnistabelle vorhanden war, zählt dieser Ordner zu den \textit{alten Ordnern}. 
+
+
+
+\subsubsection{Start von BirdNET per Remote-Shell}
+\label{subsubsec:start}
+
+
+test
+
+

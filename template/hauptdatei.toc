@@ -1,0 +1,54 @@
+\babel@toc {ngerman}{}\relax 
+\contentsline {section}{\numberline {1}Einleitende Übersicht}{1}{section.1}%
+\contentsline {section}{\numberline {2}Konzept}{2}{section.2}%
+\contentsline {section}{\numberline {3}Versuchsaufbau}{3}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Computer }{3}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Nutzung eines Hardwarebeschleunigers}{4}{subsubsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.2}Stromversorgung }{4}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Mikrofon}{4}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}GPS-Gerät}{4}{subsubsection.3.3.1}%
+\contentsline {section}{\numberline {4}test}{5}{section.4}%
+\contentsline {section}{\numberline {5}Umsetzung}{5}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Modell der Software}{5}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Bibliotheken}{6}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Multiprocessing}{6}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}Pandas}{6}{subsubsection.5.2.2}%
+\contentsline {subsubsection}{\numberline {5.2.3}Soundfile}{7}{subsubsection.5.2.3}%
+\contentsline {subsubsection}{\numberline {5.2.4}datetime}{7}{subsubsection.5.2.4}%
+\contentsline {subsubsection}{\numberline {5.2.5}ALSA}{8}{subsubsection.5.2.5}%
+\contentsline {subsubsection}{\numberline {5.2.6}glob}{8}{subsubsection.5.2.6}%
+\contentsline {subsubsection}{\numberline {5.2.7}Sox}{8}{subsubsection.5.2.7}%
+\contentsline {subsubsection}{\numberline {5.2.8}gps}{9}{subsubsection.5.2.8}%
+\contentsline {subsubsection}{\numberline {5.2.9}Piso}{10}{subsubsection.5.2.9}%
+\contentsline {subsection}{\numberline {5.3}Initialisierung}{10}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Aufnahme}{11}{subsection.5.4}%
+\contentsline {subsubsection}{\numberline {5.4.1}Programmfunktionen und -parameter sowie Sox-Aufruf}{11}{subsubsection.5.4.1}%
+\contentsline {subsubsection}{\numberline {5.4.2}Mikrofonrauschen und Schwellwertanpassung}{12}{subsubsection.5.4.2}%
+\contentsline {subsection}{\numberline {5.5}Analyse}{12}{subsection.5.5}%
+\contentsline {subsubsection}{\numberline {5.5.1}Vorstellung des BirdNet-Analyzers}{12}{subsubsection.5.5.1}%
+\contentsline {subsubsection}{\numberline {5.5.2}Änderungen in BirdNET}{13}{subsubsection.5.5.2}%
+\contentsline {subsubsection}{\numberline {5.5.3}analyze.py}{14}{subsubsection.5.5.3}%
+\contentsline {subsubsection}{\numberline {5.5.4}Effizienzsteigerung}{14}{subsubsection.5.5.4}%
+\contentsline {section}{\numberline {6}Erste Versuchsdurchführungen}{14}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Startargumente und Konfigurationen}{14}{subsection.6.1}%
+\contentsline {subsubsection}{\numberline {6.1.1}Species List}{16}{subsubsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.2}Weiterverarbeitung}{17}{subsection.6.2}%
+\contentsline {subsubsection}{\numberline {6.2.1}Start von BirdNET per Remote-Shell}{19}{subsubsection.6.2.1}%
+\contentsline {section}{\numberline {7}Versuchsdurchführung}{20}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Realer Aufbau}{20}{subsection.7.1}%
+\contentsline {subsubsection}{\numberline {7.1.1}Menschenfilter - Test}{20}{subsubsection.7.1.1}%
+\contentsline {subsection}{\numberline {7.2}Testversuch 1: Wohnheim Dachterrasse}{21}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}Testversuch 1.1}{21}{subsubsection.7.2.1}%
+\contentsline {subsubsection}{\numberline {7.2.2}Ergebnisse der Analysezeit}{23}{subsubsection.7.2.2}%
+\contentsline {subsubsection}{\numberline {7.2.3}Testversuch 1.2}{23}{subsubsection.7.2.3}%
+\contentsline {subsubsection}{\numberline {7.2.4}Ergebnisse der Analysezeit}{26}{subsubsection.7.2.4}%
+\contentsline {subsubsection}{\numberline {7.2.5}Validierung}{26}{subsubsection.7.2.5}%
+\contentsline {subsection}{\numberline {7.3}Testversuch 2 - Balkon in Unterilp}{26}{subsection.7.3}%
+\contentsline {subsubsection}{\numberline {7.3.1}Ergebnisse der Analysezeit}{26}{subsubsection.7.3.1}%
+\contentsline {subsection}{\numberline {7.4}Start der Software}{26}{subsection.7.4}%
+\contentsline {section}{\numberline {8}Zusammenfassung und Ausblick}{32}{section.8}%
+\contentsline {section}{Literatur- und Quellenverzeichnis}{33}{section.8}%
+\contentsline {section}{Abbildungsverzeichnis}{34}{section*.3}%
+\contentsline {section}{Tabellenverzeichnis}{35}{section*.4}%
+\contentsline {section}{Anhang}{36}{section*.5}%
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
